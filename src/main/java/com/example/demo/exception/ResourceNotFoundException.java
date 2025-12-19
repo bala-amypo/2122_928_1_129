@@ -1,6 +1,6 @@
-//ResourceNotFoundException.java
+// ResourceNotFoundException.java
 
-package com.example.handling.exception;
+package com.example.demo.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 
