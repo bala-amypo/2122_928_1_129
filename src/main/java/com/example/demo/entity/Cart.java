@@ -2,16 +2,13 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(
-    name = "cart",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "userId")
-    }
+    uniqueConstraints = @UniqueConstraint(columnNames = "user_id")
 )
 public class Cart {
 
@@ -19,53 +16,62 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "User ID must not be null")
-    @Positive(message = "User ID must be a positive number")
-    @Column(nullable = false, unique = true)
-    private Long userId;
+    @NotNull(message = "User is required")
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false, updatable = false)
+    @OneToMany(
+        mappedBy = "cart",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<CartItem> items;
+
+    @OneToMany(
+        mappedBy = "cart",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<DiscountApplication> discounts;
+
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // ---------- Lifecycle Callbacks ----------
+    // constructors
+    public Cart() {}
+
+    public Cart(Long id, User user) {
+        this.id = id;
+        this.user = user;
+    }
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    // ---------- Getters & Setters ----------
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public List<CartItem> getItems() { return items; }
+    public void setItems(List<CartItem> items) { this.items = items; }
+
+    public List<DiscountApplication> getDiscounts() { return discounts; }
+    public void setDiscounts(List<DiscountApplication> discounts) {
+        this.discounts = discounts;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
