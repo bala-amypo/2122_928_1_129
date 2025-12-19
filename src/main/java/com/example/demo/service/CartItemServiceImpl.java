@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.CartItem;
 import com.example.demo.entity.Product;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CartItemRepo;
 import com.example.demo.repository.CartRepo;
 import com.example.demo.repository.ProductRepo;
@@ -15,9 +17,11 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartRepo cartRepo;
     private final ProductRepo productRepo;
 
-    public CartItemServiceImpl(CartItemRepo cartItemRepo,
-                               CartRepo cartRepo,
-                               ProductRepo productRepo) {
+    public CartItemServiceImpl(
+            CartItemRepo cartItemRepo,
+            CartRepo cartRepo,
+            ProductRepo productRepo) {
+
         this.cartItemRepo = cartItemRepo;
         this.cartRepo = cartRepo;
         this.productRepo = productRepo;
@@ -26,15 +30,19 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItem addItem(Long cartId, Long productId, Integer quantity) {
 
-        if (quantity <= 0) {
-            throw new RuntimeException("Quantity must be positive");
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
         }
 
         Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Cart not found with id: " + cartId)
+                );
 
         Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Product not found with id: " + productId)
+                );
 
         CartItem item = new CartItem();
         item.setCart(cart);

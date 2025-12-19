@@ -1,8 +1,11 @@
 package com.example.demo.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import com.example.demo.entity.BundleRule;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.BundleRuleRepo;
 
 @Service
@@ -16,14 +19,28 @@ public class BundleRuleServiceImpl implements BundleRuleService {
 
     @Override
     public BundleRule createRule(BundleRule rule) {
-        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
-            throw new RuntimeException("Invalid discount percentage");
+
+        if (rule.getDiscountPercentage() == null) {
+            throw new IllegalArgumentException("Discount percentage cannot be null");
         }
+
+        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
+            throw new IllegalArgumentException("Discount percentage must be between 0 and 100");
+        }
+
         return bundleRuleRepo.save(rule);
     }
 
     @Override
     public List<BundleRule> getAllRules() {
         return bundleRuleRepo.findAll();
+    }
+
+    @Override
+    public BundleRule getRuleById(Long id) {
+        return bundleRuleRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("BundleRule not found with id: " + id)
+                );
     }
 }
