@@ -20,12 +20,17 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     @Override
     public BundleRule createRule(BundleRule rule) {
 
-        if (rule.getDiscountPercentage() == null) {
-            throw new IllegalArgumentException("Discount percentage cannot be null");
+        if (rule == null) {
+            throw new IllegalArgumentException("BundleRule cannot be null");
         }
 
-        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
-            throw new IllegalArgumentException("Discount percentage must be between 0 and 100");
+        if (rule.getDiscountPercentage() == null ||
+            rule.getDiscountPercentage() < 0 ||
+            rule.getDiscountPercentage() > 100) {
+
+            throw new IllegalArgumentException(
+                    "Discount percentage must be between 0 and 100"
+            );
         }
 
         return bundleRuleRepo.save(rule);
@@ -40,7 +45,9 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     public BundleRule getRuleById(Long id) {
         return bundleRuleRepo.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("BundleRule not found with id: " + id)
+                        new ResourceNotFoundException(
+                                "BundleRule not found with id: " + id
+                        )
                 );
     }
 }

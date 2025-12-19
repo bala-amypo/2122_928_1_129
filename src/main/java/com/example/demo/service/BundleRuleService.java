@@ -8,4 +8,6 @@ public interface BundleRuleService {
     BundleRule createRule(BundleRule rule);
 
     List<BundleRule> getAllRules();
+
+    BundleRule getRuleById(Long id);
 }
