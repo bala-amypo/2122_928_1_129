@@ -1,34 +1,27 @@
-// CartController.java
 package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Cart;
-import com.example.demo.repository.CartRepo;
+import com.example.demo.service.CartService;
 
 @RestController
-@RequestMapping("/carts")
+@RequestMapping("/cart")
 public class CartController {
 
-    private final CartRepo cartRepo;
+    private final CartService cartService;
 
-    public CartController(CartRepo cartRepo) {
-        this.cartRepo = cartRepo;
+    public CartController(CartService cartService) {
+        this.cartService = cartService;
     }
 
-    @PostMapping("/{userId}")
-    public Cart create(@PathVariable Long userId) {
-        if (cartRepo.existsByUserId(userId)) {
-            throw new RuntimeException("Cart already exists");
-        }
-        Cart cart = new Cart();
-        cart.setUserId(userId);
-        return cartRepo.save(cart);
+    @PostMapping("/create/{userId}")
+    public Cart createCart(@PathVariable Long userId) {
+        return cartService.createCart(userId);
     }
 
-    @GetMapping("/{userId}")
-    public Cart getByUser(@PathVariable Long userId) {
-        return cartRepo.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+    @GetMapping("/user/{userId}")
+    public Cart getCart(@PathVariable Long userId) {
+        return cartService.getCartByUserId(userId);
     }
 }
