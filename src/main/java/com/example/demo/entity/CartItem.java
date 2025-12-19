@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(
-    name = "cart_item",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = {"cart_id", "product_id"})
     }
@@ -17,52 +16,41 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Cart must not be null")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
-    @NotNull(message = "Product must not be null")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @NotNull(message = "Quantity must not be null")
+    @NotNull
     @Min(value = 1, message = "Quantity must be at least 1")
     @Column(nullable = false)
     private Integer quantity;
 
-    // ---------- Getters & Setters ----------
+    // constructors
+    public CartItem() {}
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public CartItem(Long id, Cart cart, Product product, Integer quantity) {
         this.id = id;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
         this.cart = cart;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
         this.product = product;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Cart getCart() { return cart; }
+    public void setCart(Cart cart) { this.cart = cart; }
+
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 }
