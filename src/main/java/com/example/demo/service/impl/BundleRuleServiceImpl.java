@@ -27,9 +27,9 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     }
 
     @Override
-    public BundleRule deactivateRule(Long id) {
-        BundleRule r = repository.findById(id).orElseThrow();
-        r.setActive(false);
-        return repository.save(r);
+    public void deactivateRule(Long id) {
+        BundleRule rule = repository.findById(id).orElseThrow();
+        rule.setActive(false);
+        repository.save(rule);
     }
 }
