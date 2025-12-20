@@ -1,16 +1,17 @@
-// DiscountServiceImpl.java
 package com.example.demo.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.BundleRule;
-import com.example.demo.model.CartItem;
+import com.example.demo.model.Cart;
 import com.example.demo.model.DiscountApplication;
 import com.example.demo.repository.BundleRuleRepository;
-import com.example.demo.repository.CartItemRepository;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.DiscountApplicationRepository;
+import com.example.demo.service.DiscountService;
 
 import org.springframework.stereotype.Service;
 
@@ -18,45 +19,51 @@ import org.springframework.stereotype.Service;
 public class DiscountServiceImpl implements DiscountService {
 
     private final BundleRuleRepository bundleRuleRepository;
-    private final CartItemRepository cartItemRepository;
-    private final DiscountApplicationRepository discountApplicationRepository;
+    private final CartRepository cartRepository;
+    private final DiscountApplicationRepository discountRepo;
 
     public DiscountServiceImpl(
             BundleRuleRepository bundleRuleRepository,
-            CartItemRepository cartItemRepository,
-            DiscountApplicationRepository discountApplicationRepository) {
+            CartRepository cartRepository,
+            DiscountApplicationRepository discountRepo) {
 
         this.bundleRuleRepository = bundleRuleRepository;
-        this.cartItemRepository = cartItemRepository;
-        this.discountApplicationRepository = discountApplicationRepository;
+        this.cartRepository = cartRepository;
+        this.discountRepo = discountRepo;
     }
 
     @Override
     public List<DiscountApplication> evaluateDiscounts(Long cartId) {
 
-        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
-        List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("not found"));
 
+        List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
         List<DiscountApplication> result = new ArrayList<>();
 
         for (BundleRule rule : rules) {
-            result.add(
-                discountApplicationRepository.save(
-                    new DiscountApplication(cartId, rule.getDiscount())
-                )
-            );
+            DiscountApplication app = new DiscountApplication();
+            app.setCart(cart);
+            app.setBundleRule(rule);
+
+            // ✅ FIX: use getDiscountPercentage()
+            BigDecimal discount = rule.getDiscountPercentage();
+            app.setDiscountAmount(discount);
+
+            result.add(discountRepo.save(app));
         }
+
         return result;
     }
 
     @Override
     public DiscountApplication getApplicationById(Long id) {
-        return discountApplicationRepository.findById(id)
+        return discountRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("not found"));
     }
 
     @Override
     public List<DiscountApplication> getApplicationsForCart(Long cartId) {
-        return discountApplicationRepository.findByCartId(cartId);
+        return discountRepo.findByCartId(cartId);
     }
 }

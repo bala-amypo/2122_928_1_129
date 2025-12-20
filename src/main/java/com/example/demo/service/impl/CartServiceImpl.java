@@ -1,9 +1,9 @@
-// CartServiceImpl.java
 package com.example.demo.service.impl;
 
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Cart;
 import com.example.demo.repository.CartRepository;
+import com.example.demo.service.CartService;
 
 import org.springframework.stereotype.Service;
 
@@ -18,9 +18,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart createCart(Long userId) {
-        if (cartRepository.findByUserId(userId).isPresent()) {
-            throw new IllegalArgumentException("Cart already exists");
-        }
         return cartRepository.save(new Cart(userId));
     }
 
