@@ -1,63 +1,42 @@
+// CartServiceImpl.java
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
-
-import com.example.demo.entity.Cart;
-import com.example.demo.entity.User;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.CartRepo;
-import com.example.demo.repository.UserRepo;
+import com.example.demo.model.Cart;
+import com.example.demo.repository.CartRepository;
 
-@Service
 public class CartServiceImpl implements CartService {
 
-    private final CartRepo cartRepo;
-    private final UserRepo userRepo;
+    private final CartRepository cartRepository;
 
-    public CartServiceImpl(CartRepo cartRepo, UserRepo userRepo) {
-        this.cartRepo = cartRepo;
-        this.userRepo = userRepo;
+    public CartServiceImpl(CartRepository cartRepository) {
+        this.cartRepository = cartRepository;
     }
 
     @Override
     public Cart createCart(Long userId) {
-
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("User ID must be valid");
+        if (cartRepository.findByUserId(userId).isPresent()) {
+            throw new IllegalArgumentException("Cart already exists");
         }
+        return cartRepository.save(new Cart(userId));
+    }
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User not found with id: " + userId
-                        )
-                );
-
-        if (cartRepo.existsByUser(user)) {
-            throw new IllegalArgumentException("Cart already exists for this user");
-        }
-
-        Cart cart = new Cart();
-        cart.setUser(user);
-
-        return cartRepo.save(cart);
+    @Override
+    public Cart getCartById(Long id) {
+        return cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("not found"));
     }
 
     @Override
     public Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("not found"));
+    }
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User not found with id: " + userId
-                        )
-                );
-
-        return cartRepo.findByUser(user)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Cart not found for user id: " + userId
-                        )
-                );
+    @Override
+    public void deactivateCart(Long id) {
+        Cart cart = getCartById(id);
+        cart.setActive(false);
+        cartRepository.save(cart);
     }
 }

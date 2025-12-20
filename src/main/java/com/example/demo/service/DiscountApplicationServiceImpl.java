@@ -1,71 +1,59 @@
+// DiscountServiceImpl.java
 package com.example.demo.service;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.example.demo.entity.BundleRule;
-import com.example.demo.entity.Cart;
-import com.example.demo.entity.DiscountApplication;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.BundleRuleRepo;
-import com.example.demo.repository.CartRepo;
-import com.example.demo.repository.DiscountApplicationRepo;
+import com.example.demo.model.BundleRule;
+import com.example.demo.model.CartItem;
+import com.example.demo.model.DiscountApplication;
+import com.example.demo.repository.BundleRuleRepository;
+import com.example.demo.repository.CartItemRepository;
+import com.example.demo.repository.DiscountApplicationRepository;
 
-@Service
-public class DiscountApplicationServiceImpl implements DiscountApplicationService {
+public class DiscountServiceImpl implements DiscountService {
 
-    private final DiscountApplicationRepo discountRepo;
-    private final CartRepo cartRepo;
-    private final BundleRuleRepo bundleRuleRepo;
+    private final BundleRuleRepository bundleRuleRepository;
+    private final CartItemRepository cartItemRepository;
+    private final DiscountApplicationRepository discountApplicationRepository;
 
-    public DiscountApplicationServiceImpl(
-            DiscountApplicationRepo discountRepo,
-            CartRepo cartRepo,
-            BundleRuleRepo bundleRuleRepo) {
+    // Constructor order EXACT
+    public DiscountServiceImpl(
+            BundleRuleRepository bundleRuleRepository,
+            CartItemRepository cartItemRepository,
+            DiscountApplicationRepository discountApplicationRepository) {
 
-        this.discountRepo = discountRepo;
-        this.cartRepo = cartRepo;
-        this.bundleRuleRepo = bundleRuleRepo;
+        this.bundleRuleRepository = bundleRuleRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.discountApplicationRepository = discountApplicationRepository;
     }
 
     @Override
-    public DiscountApplication applyDiscount(
-            Long cartId,
-            Long ruleId,
-            BigDecimal amount) {
+    public List<DiscountApplication> evaluateDiscounts(Long cartId) {
 
-        if (cartId == null || cartId <= 0) {
-            throw new IllegalArgumentException("Cart ID must be a positive number");
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+        List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
+
+        List<DiscountApplication> results = new ArrayList<>();
+
+        for (BundleRule rule : rules) {
+            DiscountApplication app =
+                    discountApplicationRepository.save(
+                            new DiscountApplication(cartId, rule.getDiscount()));
+            results.add(app);
         }
+        return results;
+    }
 
-        if (ruleId == null || ruleId <= 0) {
-            throw new IllegalArgumentException("Rule ID must be a positive number");
-        }
+    @Override
+    public DiscountApplication getApplicationById(Long id) {
+        return discountApplicationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("not found"));
+    }
 
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Discount amount must be greater than zero");
-        }
-
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Cart not found with id: " + cartId
-                        )
-                );
-
-        BundleRule rule = bundleRuleRepo.findById(ruleId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "BundleRule not found with id: " + ruleId
-                        )
-                );
-
-        DiscountApplication discountApplication = new DiscountApplication();
-        discountApplication.setCart(cart);
-        discountApplication.setBundleRule(rule);
-        discountApplication.setDiscountAmount(amount);
-
-        return discountRepo.save(discountApplication);
+    @Override
+    public List<DiscountApplication> getApplicationsForCart(Long cartId) {
+        return discountApplicationRepository.findByCartId(cartId);
     }
 }

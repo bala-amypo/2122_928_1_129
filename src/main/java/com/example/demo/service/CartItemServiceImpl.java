@@ -1,54 +1,46 @@
+// CartItemServiceImpl.java
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import com.example.demo.entity.Cart;
-import com.example.demo.entity.CartItem;
-import com.example.demo.entity.Product;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.CartItemRepo;
-import com.example.demo.repository.CartRepo;
-import com.example.demo.repository.ProductRepo;
+import com.example.demo.model.CartItem;
+import com.example.demo.repository.CartItemRepository;
 
-@Service
 public class CartItemServiceImpl implements CartItemService {
 
-    private final CartItemRepo cartItemRepo;
-    private final CartRepo cartRepo;
-    private final ProductRepo productRepo;
+    private final CartItemRepository cartItemRepository;
 
-    public CartItemServiceImpl(
-            CartItemRepo cartItemRepo,
-            CartRepo cartRepo,
-            ProductRepo productRepo) {
-
-        this.cartItemRepo = cartItemRepo;
-        this.cartRepo = cartRepo;
-        this.productRepo = productRepo;
+    public CartItemServiceImpl(CartItemRepository cartItemRepository) {
+        this.cartItemRepository = cartItemRepository;
     }
 
     @Override
     public CartItem addItem(Long cartId, Long productId, Integer quantity) {
-
         if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new IllegalArgumentException("Quantity must be positive");
         }
+        return cartItemRepository.save(new CartItem(cartId, productId, quantity));
+    }
 
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Cart not found with id: " + cartId)
-                );
-
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Product not found with id: " + productId)
-                );
-
-        CartItem item = new CartItem();
-        item.setCart(cart);
-        item.setProduct(product);
+    @Override
+    public CartItem updateItem(Long id, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        CartItem item = cartItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("not found"));
         item.setQuantity(quantity);
+        return cartItemRepository.save(item);
+    }
 
-        return cartItemRepo.save(item);
+    @Override
+    public List<CartItem> getItemsForCart(Long cartId) {
+        return cartItemRepository.findByCartId(cartId);
+    }
+
+    @Override
+    public void removeItem(Long id) {
+        cartItemRepository.deleteById(id);
     }
 }
