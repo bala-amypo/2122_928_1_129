@@ -17,8 +17,10 @@
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <!-- ⚠️ & FIXED -->
     <name>demo</name>
-    <description>Demo project for Bundle & Save</description>
+    <description>Demo project for Bundle and Save</description>
 
     <properties>
         <java.version>17</java.version>
@@ -77,7 +79,7 @@
             <version>2.5.0</version>
         </dependency>
 
-        <!-- TESTNG (MANDATORY FOR EVALUATOR) -->
+        <!-- TestNG (MANDATORY for evaluator tests) -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -85,7 +87,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Boot Test (JUnit excluded automatically) -->
+        <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -110,7 +112,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Surefire Plugin for TestNG -->
+            <!-- Surefire Plugin (TestNG) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
