@@ -1,4 +1,3 @@
-// Product.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
@@ -18,19 +17,45 @@ public class Product {
 
     private boolean active = true;
 
-    public Product() {}
+    // ===== REQUIRED BY TESTS =====
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
+    public void setId(Long id) {   // 🔴 REQUIRED
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getSku() {
+        return sku;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public boolean getActive() {   // 🔴 NOT isActive()
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

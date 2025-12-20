@@ -1,4 +1,3 @@
-// Cart.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
@@ -11,6 +10,7 @@ public class Cart {
     private Long id;
 
     private Long userId;
+
     private boolean active = true;
 
     public Cart() {}
@@ -19,11 +19,27 @@ public class Cart {
         this.userId = userId;
     }
 
-    public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public boolean isActive() { return active; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
-    public void setUserId(Long userId) { this.userId = userId; }
-    public void setActive(boolean active) { this.active = active; }
+    public void setId(Long id) {   // 🔴 REQUIRED
+        this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public boolean getActive() {   // 🔴 REQUIRED
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

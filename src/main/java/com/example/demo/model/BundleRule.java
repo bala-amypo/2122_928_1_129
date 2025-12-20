@@ -1,4 +1,3 @@
-// BundleRule.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
@@ -19,21 +18,44 @@ public class BundleRule {
 
     private boolean active = true;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getRuleName() { return ruleName; }
-    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
+    public void setId(Long id) {   // 🔴 REQUIRED
+        this.id = id;
+    }
 
-    public String getRequiredProductIds() { return requiredProductIds; }
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
+    }
+
+    public String getRequiredProductIds() {
+        return requiredProductIds;
+    }
+
     public void setRequiredProductIds(String requiredProductIds) {
         this.requiredProductIds = requiredProductIds;
     }
 
-    public BigDecimal getDiscountPercentage() { return discountPercentage; }
+    public BigDecimal getDiscountPercentage() {
+        return discountPercentage;
+    }
+
     public void setDiscountPercentage(BigDecimal discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public boolean getActive() {   // 🔴 REQUIRED
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
+x
