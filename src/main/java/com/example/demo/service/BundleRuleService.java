@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.model.BundleRule;
 import java.util.List;
+import com.example.demo.model.BundleRule;
 
 public interface BundleRuleService {
 
@@ -10,8 +10,6 @@ public interface BundleRuleService {
     BundleRule updateRule(Long id, BundleRule rule);
 
     BundleRule getRuleById(Long id);
-
-    List<BundleRule> getAllRules();
 
     List<BundleRule> getActiveRules();
 
