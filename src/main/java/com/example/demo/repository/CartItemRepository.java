@@ -1,18 +1,17 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.example.demo.model.CartItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface CartItemRepository
-        extends JpaRepository<CartItem, Long> {
+import java.util.Optional;
 
-    List<CartItem> findByCartId(Long cartId);
+@Repository
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    CartItem findByCartIdAndProductId(Long cartId, Long productId); // 🔴 REQUIRED
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
 
-    List<CartItem> findByCartIdAndQuantityGreaterThanEqual(
-            Long cartId, int quantity); // 🔴 REQUIRED
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId, int quantity);
+
+    Optional<CartItem> findByCartIdAndMinQuantity(Long cartId, int quantity);
 }

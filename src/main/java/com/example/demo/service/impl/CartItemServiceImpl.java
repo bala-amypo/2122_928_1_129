@@ -29,27 +29,25 @@ public class CartItemServiceImpl implements CartItemService {
         this.productRepo = productRepo;
     }
 
-    public CartItem addItem(Long cartId, Long productId, int quantity) {
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
+@Override
+public CartItem addItemToCart(CartItem item) {
+    return cartItemRepository.save(item);
+}
 
-        return itemRepo.save(new CartItem(cart, product, quantity));
-    }
+@Override
+public CartItem updateItem(CartItem item) {
+    return cartItemRepository.save(item);
+}
 
-    public CartItem updateItem(Long id, int quantity) {
-        CartItem item = itemRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
-        item.setQuantity(quantity);
-        return itemRepo.save(item);
-    }
+@Override
+public void deleteItem(Long id) {
+    cartItemRepository.deleteById(id);
+}
+
 
     public List<CartItem> getItemsForCart(Long cartId) {
         return itemRepo.findByCartId(cartId);
     }
+    
 
-    public void removeItem(Long id) {
-        itemRepo.deleteById(id);
-    }
 }
