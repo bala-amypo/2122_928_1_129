@@ -10,52 +10,21 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sku;
     private String name;
-
     private BigDecimal price;
-
     private boolean active = true;
 
-    // ===== REQUIRED BY TESTS =====
+    public Product() {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {   // 🔴 REQUIRED
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getSku() {
-        return sku;
-    }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public boolean getActive() {   // 🔴 NOT isActive()
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public boolean getActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

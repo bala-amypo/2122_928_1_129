@@ -11,50 +11,28 @@ public class BundleRule {
     private Long id;
 
     private String ruleName;
-
     private String requiredProductIds;
-
     private BigDecimal discountPercentage;
-
     private boolean active = true;
 
-    public Long getId() {
-        return id;
-    }
+    public BundleRule() {}
 
-    public void setId(Long id) {   // 🔴 REQUIRED
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getRuleName() {
-        return ruleName;
-    }
+    public String getRuleName() { return ruleName; }
+    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
 
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
-    }
-
-    public String getRequiredProductIds() {
-        return requiredProductIds;
-    }
-
+    public String getRequiredProductIds() { return requiredProductIds; }
     public void setRequiredProductIds(String requiredProductIds) {
         this.requiredProductIds = requiredProductIds;
     }
 
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
+    public BigDecimal getDiscountPercentage() { return discountPercentage; }
     public void setDiscountPercentage(BigDecimal discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 
-    public boolean getActive() {   // 🔴 REQUIRED
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public boolean getActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
