@@ -5,38 +5,44 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.Product;
-import com.example.demo.repository.ProductRepo;
+import com.example.demo.model.Product;
+import com.example.demo.service.ProductService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
+@Tag(name = "Products")
 public class ProductController {
 
-    private final ProductRepo productRepo;
+    private final ProductService productService;
 
-    public ProductController(ProductRepo productRepo) {
-        this.productRepo = productRepo;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PostMapping
     public Product create(@RequestBody Product product) {
-        if (productRepo.existsBySku(product.getSku())) {
-            throw new RuntimeException("SKU already exists");
-        }
-        if (product.getPrice().signum() <= 0) {
-            throw new RuntimeException("Price must be greater than zero");
-        }
-        return productRepo.save(product);
+        return productService.createProduct(product);
     }
 
-    @GetMapping
-    public List<Product> getAll() {
-        return productRepo.findAll();
+    @PutMapping("/{id}")
+    public Product update(@PathVariable Long id, @RequestBody Product product) {
+        return productService.updateProduct(id, product);
     }
 
     @GetMapping("/{id}")
     public Product getById(@PathVariable Long id) {
-        return productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        return productService.getProductById(id);
+    }
+
+    @GetMapping
+    public List<Product> getAll() {
+        return productService.getAllProducts();
+    }
+
+    @PutMapping("/{id}/deactivate")
+    public void deactivate(@PathVariable Long id) {
+        productService.deactivateProduct(id);
     }
 }

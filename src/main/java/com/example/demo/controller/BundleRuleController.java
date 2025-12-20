@@ -5,29 +5,44 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.BundleRule;
-import com.example.demo.repository.BundleRuleRepo;
+import com.example.demo.model.BundleRule;
+import com.example.demo.service.BundleRuleService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/bundle-rules")
+@RequestMapping("/api/bundle-rules")
+@Tag(name = "Bundle Rules")
 public class BundleRuleController {
 
-    private final BundleRuleRepo bundleRuleRepo;
+    private final BundleRuleService bundleRuleService;
 
-    public BundleRuleController(BundleRuleRepo bundleRuleRepo) {
-        this.bundleRuleRepo = bundleRuleRepo;
+    public BundleRuleController(BundleRuleService bundleRuleService) {
+        this.bundleRuleService = bundleRuleService;
     }
 
     @PostMapping
     public BundleRule create(@RequestBody BundleRule rule) {
-        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
-            throw new RuntimeException("Invalid discount");
-        }
-        return bundleRuleRepo.save(rule);
+        return bundleRuleService.createRule(rule);
     }
 
-    @GetMapping
-    public List<BundleRule> getAll() {
-        return bundleRuleRepo.findAll();
+    @PutMapping("/{id}")
+    public BundleRule update(@PathVariable Long id, @RequestBody BundleRule rule) {
+        return bundleRuleService.updateRule(id, rule);
+    }
+
+    @GetMapping("/{id}")
+    public BundleRule getById(@PathVariable Long id) {
+        return bundleRuleService.getRuleById(id);
+    }
+
+    @GetMapping("/active")
+    public List<BundleRule> getActive() {
+        return bundleRuleService.getActiveRules();
+    }
+
+    @PutMapping("/{id}/deactivate")
+    public void deactivate(@PathVariable Long id) {
+        bundleRuleService.deactivateRule(id);
     }
 }

@@ -1,51 +1,46 @@
 // CartItemController.java
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.Cart;
-import com.example.demo.entity.CartItem;
-import com.example.demo.entity.Product;
-import com.example.demo.repository.CartItemRepo;
-import com.example.demo.repository.CartRepo;
-import com.example.demo.repository.ProductRepo;
+import com.example.demo.model.CartItem;
+import com.example.demo.service.CartItemService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/cart-items")
+@RequestMapping("/api/cart-items")
+@Tag(name = "Cart Items")
 public class CartItemController {
 
-    private final CartItemRepo cartItemRepo;
-    private final CartRepo cartRepo;
-    private final ProductRepo productRepo;
+    private final CartItemService cartItemService;
 
-    public CartItemController(CartItemRepo cartItemRepo,
-                              CartRepo cartRepo,
-                              ProductRepo productRepo) {
-        this.cartItemRepo = cartItemRepo;
-        this.cartRepo = cartRepo;
-        this.productRepo = productRepo;
+    public CartItemController(CartItemService cartItemService) {
+        this.cartItemService = cartItemService;
     }
 
     @PostMapping
-    public CartItem addItem(@RequestParam Long cartId,
-                            @RequestParam Long productId,
-                            @RequestParam Integer quantity) {
+    public CartItem add(@RequestParam Long cartId,
+                        @RequestParam Long productId,
+                        @RequestParam Integer quantity) {
+        return cartItemService.addItem(cartId, productId, quantity);
+    }
 
-        if (quantity <= 0) {
-            throw new RuntimeException("Quantity must be positive");
-        }
+    @PutMapping("/{id}")
+    public CartItem update(@PathVariable Long id,
+                           @RequestParam Integer quantity) {
+        return cartItemService.updateItem(id, quantity);
+    }
 
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+    @GetMapping("/cart/{cartId}")
+    public List<CartItem> list(@PathVariable Long cartId) {
+        return cartItemService.getItemsForCart(cartId);
+    }
 
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        CartItem item = new CartItem();
-        item.setCart(cart);
-        item.setProduct(product);
-        item.setQuantity(quantity);
-
-        return cartItemRepo.save(item);
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        cartItemService.removeItem(id);
     }
 }

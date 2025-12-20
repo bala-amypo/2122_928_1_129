@@ -1,49 +1,38 @@
-// DiscountApplicationController.java
+// DiscountController.java
 package com.example.demo.controller;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.BundleRule;
-import com.example.demo.entity.Cart;
-import com.example.demo.entity.DiscountApplication;
-import com.example.demo.repository.BundleRuleRepo;
-import com.example.demo.repository.CartRepo;
-import com.example.demo.repository.DiscountApplicationRepo;
+import com.example.demo.model.DiscountApplication;
+import com.example.demo.service.DiscountService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/discounts")
-public class DiscountApplicationController {
+@RequestMapping("/api/discounts")
+@Tag(name = "Discounts")
+public class DiscountController {
 
-    private final DiscountApplicationRepo discountRepo;
-    private final CartRepo cartRepo;
-    private final BundleRuleRepo bundleRuleRepo;
+    private final DiscountService discountService;
 
-    public DiscountApplicationController(DiscountApplicationRepo discountRepo,
-                                         CartRepo cartRepo,
-                                         BundleRuleRepo bundleRuleRepo) {
-        this.discountRepo = discountRepo;
-        this.cartRepo = cartRepo;
-        this.bundleRuleRepo = bundleRuleRepo;
+    public DiscountController(DiscountService discountService) {
+        this.discountService = discountService;
     }
 
-    @PostMapping
-    public DiscountApplication applyDiscount(@RequestParam Long cartId,
-                                             @RequestParam Long ruleId,
-                                             @RequestParam BigDecimal amount) {
+    @PostMapping("/evaluate/{cartId}")
+    public List<DiscountApplication> evaluate(@PathVariable Long cartId) {
+        return discountService.evaluateDiscounts(cartId);
+    }
 
-        Cart cart = cartRepo.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+    @GetMapping("/{id}")
+    public DiscountApplication getById(@PathVariable Long id) {
+        return discountService.getApplicationById(id);
+    }
 
-        BundleRule rule = bundleRuleRepo.findById(ruleId)
-                .orElseThrow(() -> new RuntimeException("Rule not found"));
-
-        DiscountApplication da = new DiscountApplication();
-        da.setCart(cart);
-        da.setBundleRule(rule);
-        da.setDiscountAmount(amount);
-
-        return discountRepo.save(da);
+    @GetMapping("/cart/{cartId}")
+    public List<DiscountApplication> getForCart(@PathVariable Long cartId) {
+        return discountService.getApplicationsForCart(cartId);
     }
 }
