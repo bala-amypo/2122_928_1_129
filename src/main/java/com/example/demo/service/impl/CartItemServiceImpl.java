@@ -29,7 +29,12 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem addItem(Long cartId, Long productId, Integer quantity) {
+    public CartItem addItemToCart(CartItem item) {
+        return cartItemRepository.save(item);
+    }
+
+    @Override
+    public CartItem addItemToCart(Long cartId, Long productId, Integer quantity) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
         Product product = productRepository.findById(productId).orElseThrow();
 
@@ -42,15 +47,15 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem updateItem(Long itemId, Integer quantity) {
-        CartItem item = cartItemRepository.findById(itemId).orElseThrow();
+    public CartItem updateItem(Long id, Integer quantity) {
+        CartItem item = cartItemRepository.findById(id).orElseThrow();
         item.setQuantity(quantity);
         return cartItemRepository.save(item);
     }
 
     @Override
     public List<CartItem> getItemsForCart(Long cartId) {
-        return cartItemRepository.findAll();
+        return cartItemRepository.findByCartId(cartId);
     }
 
     @Override

@@ -13,6 +13,10 @@ public class Product {
     private String name;
     private BigDecimal price;
     private boolean active = true;
+    private String sku;
+
+
+
 
     public Product() {}
 
@@ -24,6 +28,14 @@ public class Product {
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+
+    public String getSku() {
+    return sku;
+}
+
+public void setSku(String sku) {
+    this.sku = sku;
+}
 
     public boolean getActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
