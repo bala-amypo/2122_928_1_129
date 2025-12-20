@@ -1,5 +1,5 @@
 // DiscountServiceImpl.java
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
