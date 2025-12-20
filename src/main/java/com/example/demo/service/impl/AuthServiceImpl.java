@@ -1,4 +1,3 @@
-// AuthServiceImpl.java
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.AuthRequest;
@@ -7,6 +6,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.service.AuthService;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("not found"));
 
-        String token = jwtTokenProvider.generateToken(user.getEmail());
+        String token = jwtTokenProvider.generateToken(
+                user.getEmail(),
+                user.getRole(),
+                user.getId()
+        );
+
         return new AuthResponse(token);
     }
 }
