@@ -1,10 +1,8 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Cart;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.service.CartService;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,26 +15,27 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart createCart(Long userId) {
-        return cartRepository.save(new Cart(userId));
+    public Cart getActiveCartForUser(Long userId) {
+        return cartRepository
+                .findByUserIdAndActiveTrue(userId)
+                .orElseGet(() -> createCartForUser(userId));
     }
 
     @Override
-    public Cart getCartById(Long id) {
-        return cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
-    }
+    public Cart deactivateCartForUser(Long userId) {
+        Cart cart = cartRepository
+                .findByUserIdAndActiveTrue(userId)
+                .orElseThrow();
 
-    @Override
-    public Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
-    }
-
-    @Override
-    public void deactivateCart(Long id) {
-        Cart cart = getCartById(id);
         cart.setActive(false);
-        cartRepository.save(cart);
+        return cartRepository.save(cart);
+    }
+
+    @Override
+    public Cart createCartForUser(Long userId) {
+        Cart cart = new Cart();
+        cart.setUserId(userId);
+        cart.setActive(true);
+        return cartRepository.save(cart);
     }
 }

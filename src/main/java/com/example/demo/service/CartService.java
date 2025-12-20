@@ -4,11 +4,9 @@ import com.example.demo.model.Cart;
 
 public interface CartService {
 
-    Cart createCart(Long userId);
+    Cart getActiveCartForUser(Long userId);
 
-    Cart getCartById(Long id);
+    Cart deactivateCartForUser(Long userId);
 
-    Cart getCartByUserId(Long userId);
-
-    void deactivateCart(Long id);
+    Cart createCartForUser(Long userId);
 }
