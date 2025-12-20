@@ -10,25 +10,30 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long cartId;
-    private Long productId;
-    private Integer quantity;
+    @ManyToOne
+    private Cart cart;
+
+    @ManyToOne
+    private Product product;
+
+    private int quantity;
 
     public CartItem() {}
 
-    public CartItem(Long cartId, Long productId, Integer quantity) {
-        this.cartId = cartId;
-        this.productId = productId;
+    public CartItem(Cart cart, Product product, int quantity) {
+        this.cart = cart;
+        this.product = product;
         this.quantity = quantity;
     }
 
     public Long getId() { return id; }
-    public Long getCartId() { return cartId; }
-    public Long getProductId() { return productId; }
-    public Integer getQuantity() { return quantity; }
 
-    public void setId(Long id) { this.id = id; }
-    public void setCartId(Long cartId) { this.cartId = cartId; }
-    public void setProductId(Long productId) { this.productId = productId; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public Cart getCart() { return cart; }
+    public void setCart(Cart cart) { this.cart = cart; }
+
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
+
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 }

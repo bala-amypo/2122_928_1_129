@@ -2,6 +2,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 public class Product {
@@ -12,26 +13,24 @@ public class Product {
 
     private String sku;
     private String name;
-    private double price;
+
+    private BigDecimal price;
+
     private boolean active = true;
 
     public Product() {}
 
-    public Product(String sku, String name, double price) {
-        this.sku = sku;
-        this.name = name;
-        this.price = price;
-    }
-
     public Long getId() { return id; }
-    public String getSku() { return sku; }
-    public String getName() { return name; }
-    public double getPrice() { return price; }
-    public boolean isActive() { return active; }
 
-    public void setId(Long id) { this.id = id; }
+    public String getSku() { return sku; }
     public void setSku(String sku) { this.sku = sku; }
+
+    public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public void setPrice(double price) { this.price = price; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 }

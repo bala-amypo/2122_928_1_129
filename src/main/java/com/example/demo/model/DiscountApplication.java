@@ -2,6 +2,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 public class DiscountApplication {
@@ -10,21 +12,31 @@ public class DiscountApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long cartId;
-    private double discountAmount;
+    @ManyToOne
+    private Cart cart;
 
-    public DiscountApplication() {}
+    @ManyToOne
+    private BundleRule bundleRule;
 
-    public DiscountApplication(Long cartId, double discountAmount) {
-        this.cartId = cartId;
+    private BigDecimal discountAmount;
+
+    private LocalDateTime appliedAt;
+
+    public Long getId() { return id; }
+
+    public Cart getCart() { return cart; }
+    public void setCart(Cart cart) { this.cart = cart; }
+
+    public BundleRule getBundleRule() { return bundleRule; }
+    public void setBundleRule(BundleRule bundleRule) { this.bundleRule = bundleRule; }
+
+    public BigDecimal getDiscountAmount() { return discountAmount; }
+    public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
     }
 
-    public Long getId() { return id; }
-    public Long getCartId() { return cartId; }
-    public double getDiscountAmount() { return discountAmount; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setCartId(Long cartId) { this.cartId = cartId; }
-    public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
+    public LocalDateTime getAppliedAt() { return appliedAt; }
+    public void setAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
 }
