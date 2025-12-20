@@ -58,4 +58,3 @@ public class BundleRule {
         this.active = active;
     }
 }
-x
