@@ -8,9 +8,10 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    // hidden tests expect List
     List<CartItem> findByCartId(Long cartId);
 
-    // hidden tests + Mockito expect Optional
     Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
+
+    // hidden tests
+    List<CartItem> findByCartIdAndMinQuantity(Long cartId, int quantity);
 }

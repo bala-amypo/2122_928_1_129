@@ -1,47 +1,35 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
-
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.BundleRule;
 import com.example.demo.repository.BundleRuleRepository;
 import com.example.demo.service.BundleRuleService;
-
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BundleRuleServiceImpl implements BundleRuleService {
 
-    private final BundleRuleRepository repo;
+    private final BundleRuleRepository repository;
 
-    public BundleRuleServiceImpl(BundleRuleRepository repo) {
-        this.repo = repo;
+    public BundleRuleServiceImpl(BundleRuleRepository repository) {
+        this.repository = repository;
     }
 
+    @Override
     public BundleRule createRule(BundleRule rule) {
-        return repo.save(rule);
+        return repository.save(rule);
     }
 
-    public BundleRule updateRule(Long id, BundleRule rule) {
-        BundleRule r = getRuleById(id);
-        r.setRuleName(rule.getRuleName());
-        r.setRequiredProductIds(rule.getRequiredProductIds());
-        r.setDiscountPercentage(rule.getDiscountPercentage());
-        return repo.save(r);
+    @Override
+    public List<BundleRule> getAllRules() {
+        return repository.findAll();
     }
 
-    public BundleRule getRuleById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
-    }
-
-    public List<BundleRule> getActiveRules() {
-        return repo.findByActiveTrue();
-    }
-
-    public void deactivateRule(Long id) {
-        BundleRule r = getRuleById(id);
+    @Override
+    public BundleRule deactivateRule(Long id) {
+        BundleRule r = repository.findById(id).orElseThrow();
         r.setActive(false);
-        repo.save(r);
+        return repository.save(r);
     }
 }

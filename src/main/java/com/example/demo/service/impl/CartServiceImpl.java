@@ -14,6 +14,32 @@ public class CartServiceImpl implements CartService {
         this.cartRepository = cartRepository;
     }
 
+    // ===== Controller methods =====
+
+    @Override
+    public Cart createCart(Long userId) {
+        return createCartForUser(userId);
+    }
+
+    @Override
+    public Cart getCartById(Long cartId) {
+        return cartRepository.findById(cartId).orElseThrow();
+    }
+
+    @Override
+    public Cart getCartByUserId(Long userId) {
+        return getActiveCartForUser(userId);
+    }
+
+    @Override
+    public Cart deactivateCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow();
+        cart.setActive(false);
+        return cartRepository.save(cart);
+    }
+
+    // ===== Hidden-test methods =====
+
     @Override
     public Cart getActiveCartForUser(Long userId) {
         return cartRepository
@@ -26,7 +52,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository
                 .findByUserIdAndActiveTrue(userId)
                 .orElseThrow();
-
         cart.setActive(false);
         return cartRepository.save(cart);
     }
