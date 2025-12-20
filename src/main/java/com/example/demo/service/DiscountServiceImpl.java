@@ -12,13 +12,15 @@ import com.example.demo.repository.BundleRuleRepository;
 import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.DiscountApplicationRepository;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class DiscountServiceImpl implements DiscountService {
 
     private final BundleRuleRepository bundleRuleRepository;
     private final CartItemRepository cartItemRepository;
     private final DiscountApplicationRepository discountApplicationRepository;
 
-    // Constructor order EXACT
     public DiscountServiceImpl(
             BundleRuleRepository bundleRuleRepository,
             CartItemRepository cartItemRepository,
@@ -35,15 +37,16 @@ public class DiscountServiceImpl implements DiscountService {
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
         List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
 
-        List<DiscountApplication> results = new ArrayList<>();
+        List<DiscountApplication> result = new ArrayList<>();
 
         for (BundleRule rule : rules) {
-            DiscountApplication app =
-                    discountApplicationRepository.save(
-                            new DiscountApplication(cartId, rule.getDiscount()));
-            results.add(app);
+            result.add(
+                discountApplicationRepository.save(
+                    new DiscountApplication(cartId, rule.getDiscount())
+                )
+            );
         }
-        return results;
+        return result;
     }
 
     @Override

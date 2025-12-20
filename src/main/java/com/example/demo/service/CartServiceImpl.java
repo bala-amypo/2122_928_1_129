@@ -5,6 +5,9 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Cart;
 import com.example.demo.repository.CartRepository;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;

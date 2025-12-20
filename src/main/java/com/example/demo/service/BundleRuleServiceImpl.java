@@ -7,6 +7,9 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.BundleRule;
 import com.example.demo.repository.BundleRuleRepository;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class BundleRuleServiceImpl implements BundleRuleService {
 
     private final BundleRuleRepository bundleRuleRepository;

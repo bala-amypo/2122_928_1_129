@@ -9,14 +9,15 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // Constructor order EXACT
     public AuthServiceImpl(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
