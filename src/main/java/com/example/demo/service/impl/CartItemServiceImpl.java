@@ -59,6 +59,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+public CartItem addItem(Long cartId, Long productId, Integer quantity) {
+    return addItemToCart(cartId, productId, quantity);
+}
+
+    @Override
     public void removeItem(Long id) {
         cartItemRepository.deleteById(id);
     }

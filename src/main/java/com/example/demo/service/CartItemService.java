@@ -5,10 +5,13 @@ import java.util.List;
 
 public interface CartItemService {
 
-    // hidden tests call this
+    // controller + hidden tests
+    CartItem addItem(Long cartId, Long productId, Integer quantity);
+
+    // hidden tests
     CartItem addItemToCart(CartItem item);
 
-    // hidden tests call this
+    // hidden tests
     CartItem addItemToCart(Long cartId, Long productId, Integer quantity);
 
     CartItem updateItem(Long id, Integer quantity);
