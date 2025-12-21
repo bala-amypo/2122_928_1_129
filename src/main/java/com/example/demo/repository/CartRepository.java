@@ -9,7 +9,4 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     // hidden tests
     Optional<Cart> findByUserIdAndActiveTrue(Long userId);
-
-    // hidden tests
-    Optional<Cart> findByUserIdAndInactiveTrue(Long userId);
 }
