@@ -3,18 +3,22 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "cart_items")
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(nullable = false)
     private int quantity;
 
     public CartItem() {}
