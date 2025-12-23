@@ -1,55 +1,92 @@
 package com.example.demo.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.BundleRule;
-import com.example.demo.model.Cart;
-import com.example.demo.model.DiscountApplication;
-import com.example.demo.repository.BundleRuleRepository;
-import com.example.demo.repository.CartRepository;
-import com.example.demo.repository.DiscountApplicationRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.DiscountService;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DiscountServiceImpl implements DiscountService {
 
+    private final DiscountApplicationRepository discountRepo;
     private final BundleRuleRepository bundleRuleRepository;
     private final CartRepository cartRepository;
-    private final DiscountApplicationRepository discountRepo;
+    private final CartItemRepository cartItemRepository;
 
     public DiscountServiceImpl(
+            DiscountApplicationRepository discountRepo,
             BundleRuleRepository bundleRuleRepository,
             CartRepository cartRepository,
-            DiscountApplicationRepository discountRepo) {
+            CartItemRepository cartItemRepository) {
 
+        this.discountRepo = discountRepo;
         this.bundleRuleRepository = bundleRuleRepository;
         this.cartRepository = cartRepository;
-        this.discountRepo = discountRepo;
+        this.cartItemRepository = cartItemRepository;
     }
 
     @Override
+    @Transactional
     public List<DiscountApplication> evaluateDiscounts(Long cartId) {
 
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
+        if (!cart.isActive()) {
+            return List.of();
+        }
+
+        discountRepo.deleteByCartId(cartId);
+
+        List<CartItem> items = cartItemRepository.findByCartId(cartId);
         List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
+
+        Set<Long> productIdsInCart = items.stream()
+                .map(i -> i.getProduct().getId())
+                .collect(Collectors.toSet());
+
         List<DiscountApplication> result = new ArrayList<>();
 
         for (BundleRule rule : rules) {
-            DiscountApplication app = new DiscountApplication();
-            app.setCart(cart);
-            app.setBundleRule(rule);
+            String[] requiredIds = rule.getRequiredProductIds().split(",");
 
-            BigDecimal discount = rule.getDiscountPercentage();
-            app.setDiscountAmount(discount);
+            boolean matches = true;
+            for (String id : requiredIds) {
+                if (!productIdsInCart.contains(Long.parseLong(id.trim()))) {
+                    matches = false;
+                    break;
+                }
+            }
 
-            result.add(discountRepo.save(app));
+            if (matches) {
+                BigDecimal total = items.stream()
+                        .map(i -> i.getProduct().getPrice()
+                                .multiply(BigDecimal.valueOf(i.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal discountAmount = total
+                        .multiply(BigDecimal.valueOf(rule.getDiscountPercentage()))
+                        .divide(BigDecimal.valueOf(100));
+
+                if (discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+                    DiscountApplication app = new DiscountApplication();
+                    app.setCart(cart);
+                    app.setBundleRule(rule);
+                    app.setDiscountAmount(discountAmount);
+                    app.setAppliedAt(LocalDateTime.now());
+
+                    result.add(discountRepo.save(app));
+                }
+            }
         }
 
         return result;
@@ -58,7 +95,7 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public DiscountApplication getApplicationById(Long id) {
         return discountRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("not found"));
+                .orElseThrow(() -> new EntityNotFoundException("DiscountApplication not found"));
     }
 
     @Override

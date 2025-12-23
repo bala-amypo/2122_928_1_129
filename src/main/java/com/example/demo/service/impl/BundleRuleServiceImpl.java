@@ -2,11 +2,11 @@ package com.example.demo.service.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.example.demo.model.BundleRule;
 import com.example.demo.repository.BundleRuleRepository;
 import com.example.demo.service.BundleRuleService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BundleRuleServiceImpl implements BundleRuleService {
@@ -19,6 +19,15 @@ public class BundleRuleServiceImpl implements BundleRuleService {
 
     @Override
     public BundleRule createRule(BundleRule rule) {
+
+        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
+            throw new IllegalArgumentException("between 0 and 100");
+        }
+
+        if (rule.getRequiredProductIds() == null || rule.getRequiredProductIds().trim().isEmpty()) {
+            throw new IllegalArgumentException("cannot be empty");
+        }
+
         rule.setActive(true);
         return bundleRuleRepository.save(rule);
     }
@@ -26,12 +35,10 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     @Override
     public BundleRule updateRule(Long id, BundleRule rule) {
         BundleRule existing = bundleRuleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("BundleRule not found"));
+                .orElseThrow(() -> new EntityNotFoundException("BundleRule not found"));
 
-        existing.setBuyProductId(rule.getBuyProductId());
-        existing.setBuyQuantity(rule.getBuyQuantity());
-        existing.setFreeProductId(rule.getFreeProductId());
-        existing.setFreeQuantity(rule.getFreeQuantity());
+        existing.setRuleName(rule.getRuleName());
+        existing.setRequiredProductIds(rule.getRequiredProductIds());
         existing.setDiscountPercentage(rule.getDiscountPercentage());
         existing.setActive(rule.isActive());
 
@@ -41,7 +48,7 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     @Override
     public BundleRule getRuleById(Long id) {
         return bundleRuleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("BundleRule not found"));
+                .orElseThrow(() -> new EntityNotFoundException("BundleRule not found"));
     }
 
     @Override
@@ -51,8 +58,7 @@ public class BundleRuleServiceImpl implements BundleRuleService {
 
     @Override
     public void deactivateRule(Long id) {
-        BundleRule rule = bundleRuleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("BundleRule not found"));
+        BundleRule rule = getRuleById(id);
         rule.setActive(false);
         bundleRuleRepository.save(rule);
     }
