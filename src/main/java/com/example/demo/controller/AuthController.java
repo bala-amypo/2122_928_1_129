@@ -3,9 +3,7 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.RegisterRequest;
+import com.example.demo.model.User;
 import com.example.demo.service.AuthService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,12 +20,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequest request) {
-        authService.register(request);
+    public User register(@RequestBody User user) {
+        return authService.register(user);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
-        return authService.login(request);
+    public User login(
+            @RequestParam String email,
+            @RequestParam String password) {
+
+        return authService.login(email, password);
     }
 }

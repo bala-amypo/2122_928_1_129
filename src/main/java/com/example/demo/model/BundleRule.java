@@ -1,33 +1,21 @@
-// File: BundleRule.java
-package com.example.demo.entity;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
-@Table(name = "bundle_rules")
 public class BundleRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String ruleName;
+    private Long buyProductId;
+    private int buyQuantity;
 
-    @ElementCollection
-    @CollectionTable(
-        name = "bundle_rule_products",
-        joinColumns = @JoinColumn(name = "bundle_rule_id")
-    )
-    @Column(name = "product_id")
-    private List<Long> requiredProductIds;
+    private Long freeProductId;
+    private int freeQuantity;
 
-    @Column(nullable = false, precision = 5, scale = 2)
-    private BigDecimal discountPercentage;
-
-    private boolean active;
+    private boolean active = true;
 
     public BundleRule() {}
 
@@ -35,32 +23,36 @@ public class BundleRule {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getBuyProductId() {
+        return buyProductId;
     }
 
-    public String getRuleName() {
-        return ruleName;
+    public void setBuyProductId(Long buyProductId) {
+        this.buyProductId = buyProductId;
     }
 
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
+    public int getBuyQuantity() {
+        return buyQuantity;
     }
 
-    public List<Long> getRequiredProductIds() {
-        return requiredProductIds;
+    public void setBuyQuantity(int buyQuantity) {
+        this.buyQuantity = buyQuantity;
     }
 
-    public void setRequiredProductIds(List<Long> requiredProductIds) {
-        this.requiredProductIds = requiredProductIds;
+    public Long getFreeProductId() {
+        return freeProductId;
     }
 
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
+    public void setFreeProductId(Long freeProductId) {
+        this.freeProductId = freeProductId;
     }
 
-    public void setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
+    public int getFreeQuantity() {
+        return freeQuantity;
+    }
+
+    public void setFreeQuantity(int freeQuantity) {
+        this.freeQuantity = freeQuantity;
     }
 
     public boolean isActive() {
