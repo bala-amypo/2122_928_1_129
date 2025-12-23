@@ -30,7 +30,7 @@ public class SwaggerConfig {
                         new SecurityRequirement().addList("bearerAuth")
                 )
                 .servers(List.of(
-                        new Server().url("https://9288.pro604cr.amypo.ai/")
+                        new Server().url("https://9136.408procr.amypo.ai/")
                 ));
     }
 }
