@@ -16,7 +16,6 @@ public class BundleRule {
     private Long freeProductId;
     private int freeQuantity;
 
-    // ✅ CHANGE TO BigDecimal
     private BigDecimal discountPercentage;
 
     private boolean active = true;

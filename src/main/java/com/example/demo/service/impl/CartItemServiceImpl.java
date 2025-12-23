@@ -12,7 +12,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItem addItem(Long cartId, Long productId, Integer quantity) {
-        return new CartItem(); // stub for test
+        return new CartItem();
     }
 
     @Override

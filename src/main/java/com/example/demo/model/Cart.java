@@ -1,4 +1,4 @@
-// File: Cart.java
+
 package com.example.demo.model;
 
 import jakarta.persistence.*;
@@ -40,7 +40,6 @@ public class Cart {
         this.userId = userId;
     }
 
-    // ✅ IMPORTANT: boolean getter must be isActive()
     public boolean isActive() {
         return active;
     }

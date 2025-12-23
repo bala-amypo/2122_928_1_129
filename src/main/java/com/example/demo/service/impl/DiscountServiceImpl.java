@@ -46,7 +46,6 @@ public class DiscountServiceImpl implements DiscountService {
             app.setCart(cart);
             app.setBundleRule(rule);
 
-            // ✅ FIX: use getDiscountPercentage()
             BigDecimal discount = rule.getDiscountPercentage();
             app.setDiscountAmount(discount);
 

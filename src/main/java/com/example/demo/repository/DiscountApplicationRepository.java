@@ -10,6 +10,5 @@ public interface DiscountApplicationRepository
 
     List<DiscountApplication> findByCartId(Long cartId);
 
-    // hidden tests call this
     void deleteByCartId(Long cartId);
 }

@@ -14,8 +14,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
 
-    // ✅ Hidden test requires this method name
-    // We override query derivation using JPQL
     @Query("""
            SELECT ci
            FROM CartItem ci
