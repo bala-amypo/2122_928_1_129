@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +15,9 @@ public class BundleRule {
 
     private Long freeProductId;
     private int freeQuantity;
+
+    // ✅ CHANGE TO BigDecimal
+    private BigDecimal discountPercentage;
 
     private boolean active = true;
 
@@ -53,6 +57,15 @@ public class BundleRule {
 
     public void setFreeQuantity(int freeQuantity) {
         this.freeQuantity = freeQuantity;
+    }
+
+    // ✅ REQUIRED BY DiscountServiceImpl
+    public BigDecimal getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(BigDecimal discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 
     public boolean isActive() {
