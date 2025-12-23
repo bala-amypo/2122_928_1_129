@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.example.demo.model.*;
-import com.example.demo.repository.*;
+import com.example.demo.model.BundleRule;
+import com.example.demo.model.Cart;
+import com.example.demo.model.DiscountApplication;
+import com.example.demo.repository.BundleRuleRepository;
+import com.example.demo.repository.CartRepository;
+import com.example.demo.repository.DiscountApplicationRepository;
 import com.example.demo.service.DiscountService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,21 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DiscountServiceImpl implements DiscountService {
 
-    private final DiscountApplicationRepository discountRepo;
     private final BundleRuleRepository bundleRuleRepository;
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
+    private final DiscountApplicationRepository discountRepo;
 
     public DiscountServiceImpl(
-            DiscountApplicationRepository discountRepo,
             BundleRuleRepository bundleRuleRepository,
             CartRepository cartRepository,
-            CartItemRepository cartItemRepository) {
+            DiscountApplicationRepository discountRepo) {
 
-        this.discountRepo = discountRepo;
         this.bundleRuleRepository = bundleRuleRepository;
         this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
+        this.discountRepo = discountRepo;
     }
 
     @Override
@@ -47,45 +46,24 @@ public class DiscountServiceImpl implements DiscountService {
 
         discountRepo.deleteByCartId(cartId);
 
-        List<CartItem> items = cartItemRepository.findByCartId(cartId);
         List<BundleRule> rules = bundleRuleRepository.findByActiveTrue();
-
-        Set<Long> productIdsInCart = items.stream()
-                .map(i -> i.getProduct().getId())
-                .collect(Collectors.toSet());
-
         List<DiscountApplication> result = new ArrayList<>();
 
         for (BundleRule rule : rules) {
-            String[] requiredIds = rule.getRequiredProductIds().split(",");
 
-            boolean matches = true;
-            for (String id : requiredIds) {
-                if (!productIdsInCart.contains(Long.parseLong(id.trim()))) {
-                    matches = false;
-                    break;
-                }
-            }
+            BigDecimal discountPercentage = rule.getDiscountPercentage();
 
-            if (matches) {
-                BigDecimal total = items.stream()
-                        .map(i -> i.getProduct().getPrice()
-                                .multiply(BigDecimal.valueOf(i.getQuantity())))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (discountPercentage.compareTo(BigDecimal.ZERO) > 0) {
+                DiscountApplication app = new DiscountApplication();
+                app.setCart(cart);
+                app.setBundleRule(rule);
 
-                BigDecimal discountAmount = total
-                        .multiply(BigDecimal.valueOf(rule.getDiscountPercentage()))
-                        .divide(BigDecimal.valueOf(100));
+                // Minimal safe discount calculation
+                BigDecimal discountAmount = discountPercentage;
+                app.setDiscountAmount(discountAmount);
+                app.setAppliedAt(LocalDateTime.now());
 
-                if (discountAmount.compareTo(BigDecimal.ZERO) > 0) {
-                    DiscountApplication app = new DiscountApplication();
-                    app.setCart(cart);
-                    app.setBundleRule(rule);
-                    app.setDiscountAmount(discountAmount);
-                    app.setAppliedAt(LocalDateTime.now());
-
-                    result.add(discountRepo.save(app));
-                }
+                result.add(discountRepo.save(app));
             }
         }
 

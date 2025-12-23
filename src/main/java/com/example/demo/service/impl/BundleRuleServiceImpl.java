@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
 import java.util.List;
+import java.math.BigDecimal;
+
 
 import com.example.demo.model.BundleRule;
 import com.example.demo.repository.BundleRuleRepository;
@@ -20,12 +22,11 @@ public class BundleRuleServiceImpl implements BundleRuleService {
     @Override
     public BundleRule createRule(BundleRule rule) {
 
-        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
-            throw new IllegalArgumentException("between 0 and 100");
-        }
+        if (rule.getDiscountPercentage() == null ||
+            rule.getDiscountPercentage().compareTo(BigDecimal.ZERO) < 0 ||
+            rule.getDiscountPercentage().compareTo(BigDecimal.valueOf(100)) > 0) {
 
-        if (rule.getRequiredProductIds() == null || rule.getRequiredProductIds().trim().isEmpty()) {
-            throw new IllegalArgumentException("cannot be empty");
+            throw new IllegalArgumentException("between 0 and 100");
         }
 
         rule.setActive(true);
@@ -34,11 +35,14 @@ public class BundleRuleServiceImpl implements BundleRuleService {
 
     @Override
     public BundleRule updateRule(Long id, BundleRule rule) {
+
         BundleRule existing = bundleRuleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("BundleRule not found"));
 
-        existing.setRuleName(rule.getRuleName());
-        existing.setRequiredProductIds(rule.getRequiredProductIds());
+        existing.setBuyProductId(rule.getBuyProductId());
+        existing.setBuyQuantity(rule.getBuyQuantity());
+        existing.setFreeProductId(rule.getFreeProductId());
+        existing.setFreeQuantity(rule.getFreeQuantity());
         existing.setDiscountPercentage(rule.getDiscountPercentage());
         existing.setActive(rule.isActive());
 
