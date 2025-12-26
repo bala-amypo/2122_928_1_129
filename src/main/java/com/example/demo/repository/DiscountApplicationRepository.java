@@ -1,10 +1,5 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.DiscountApplication;
+import com.example.demo.model.*;
+import org.springframework.data.jpa.repository.*;
 import java.util.*;
-
-public interface DiscountApplicationRepository {
-    void deleteByCartId(Long cartId);
-    DiscountApplication save(DiscountApplication app);
-    List<DiscountApplication> findByCartId(Long cartId);
-}

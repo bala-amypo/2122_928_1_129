@@ -1,10 +1,5 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.Cart;
+import com.example.demo.model.*;
+import org.springframework.data.jpa.repository.*;
 import java.util.*;
-
-public interface CartRepository {
-    Optional<Cart> findByUserIdAndActiveTrue(Long userId);
-    Optional<Cart> findById(Long id);
-    Cart save(Cart cart);
-}
