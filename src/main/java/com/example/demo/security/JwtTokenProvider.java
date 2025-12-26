@@ -3,10 +3,10 @@ package com.example.demo.security;
 public class JwtTokenProvider {
 
     public String generateToken(String email, String role, Long userId) {
-        return "dummy-token";
+        return "JWT-" + email + "-" + role + "-" + userId;
     }
 
     public boolean validateToken(String token) {
-        return token != null;
+        return token != null && token.startsWith("JWT-");
     }
 }

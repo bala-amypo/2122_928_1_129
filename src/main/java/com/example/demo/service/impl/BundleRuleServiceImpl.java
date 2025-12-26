@@ -5,23 +5,21 @@ import com.example.demo.repository.BundleRuleRepository;
 
 public class BundleRuleServiceImpl {
 
-    private final BundleRuleRepository bundleRuleRepository;
+    private final BundleRuleRepository repo;
 
     public BundleRuleServiceImpl(BundleRuleRepository repo) {
-        this.bundleRuleRepository = repo;
+        this.repo = repo;
     }
 
     public BundleRule createRule(BundleRule rule) {
 
+        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100)
+            throw new IllegalArgumentException("between 0 and 100");
+
         if (rule.getRequiredProductIds() == null ||
-            rule.getRequiredProductIds().trim().isEmpty()) {
-            throw new IllegalArgumentException("Required products cannot be empty");
-        }
+            rule.getRequiredProductIds().trim().isEmpty())
+            throw new IllegalArgumentException("cannot be empty");
 
-        if (rule.getDiscountPercentage() < 0 || rule.getDiscountPercentage() > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100");
-        }
-
-        return rule;
+        return repo.save(rule);
     }
 }

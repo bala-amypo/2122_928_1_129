@@ -6,23 +6,23 @@ import jakarta.persistence.EntityNotFoundException;
 
 public class CartServiceImpl {
 
-    private final CartRepository cartRepository;
+    private final CartRepository repo;
 
     public CartServiceImpl(CartRepository repo) {
-        this.cartRepository = repo;
+        this.repo = repo;
     }
 
     public Cart createCart(Long userId) {
-        return cartRepository.findByUserIdAndActiveTrue(userId)
-                .orElseGet(() -> {
-                    Cart c = new Cart();
-                    c.setUserId(userId);
-                    return cartRepository.save(c);
-                });
+        return repo.findByUserIdAndActiveTrue(userId)
+                .orElseGet(() -> repo.save(new Cart() {{
+                    setUserId(userId);
+                    setActive(true);
+                }}));
     }
 
     public Cart getActiveCartForUser(Long userId) {
-        return cartRepository.findByUserIdAndActiveTrue(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Active cart not found"));
+        return repo.findByUserIdAndActiveTrue(userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Active cart not found"));
     }
 }

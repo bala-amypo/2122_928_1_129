@@ -2,61 +2,68 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
+import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DiscountServiceImpl {
 
-    private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
-    private final BundleRuleRepository bundleRuleRepository;
-    private final DiscountApplicationRepository discountApplicationRepository;
+    private final DiscountApplicationRepository appRepo;
+    private final BundleRuleRepository ruleRepo;
+    private final CartRepository cartRepo;
+    private final CartItemRepository itemRepo;
 
-    public DiscountServiceImpl(CartRepository c, CartItemRepository ci,
-                               BundleRuleRepository br, DiscountApplicationRepository da) {
-        this.cartRepository = c;
-        this.cartItemRepository = ci;
-        this.bundleRuleRepository = br;
-        this.discountApplicationRepository = da;
+    public DiscountServiceImpl(
+            DiscountApplicationRepository a,
+            BundleRuleRepository b,
+            CartRepository c,
+            CartItemRepository i) {
+        this.appRepo = a;
+        this.ruleRepo = b;
+        this.cartRepo = c;
+        this.itemRepo = i;
     }
 
+    @Transactional
     public List<DiscountApplication> evaluateDiscounts(Long cartId) {
 
-        Cart cart = cartRepository.findById(cartId).orElseThrow();
-        if (!cart.getActive()) return Collections.emptyList();
+        Cart cart = cartRepo.findById(cartId).orElse(null);
+        if (cart == null || !cart.getActive()) return List.of();
 
-        discountApplicationRepository.deleteByCartId(cartId);
+        appRepo.deleteByCartId(cartId);
 
-        List<CartItem> items = cartItemRepository.findByCartId(cartId);
-        Set<Long> productIds = items.stream()
-                .map(ci -> ci.getProduct().getId())
-                .collect(Collectors.toSet());
+        List<CartItem> items = itemRepo.findByCartId(cartId);
+        List<BundleRule> rules = ruleRepo.findByActiveTrue();
 
-        List<DiscountApplication> results = new ArrayList<>();
+        List<DiscountApplication> result = new ArrayList<>();
 
-        for (BundleRule rule : bundleRuleRepository.findByActiveTrue()) {
-            Set<Long> required = Arrays.stream(rule.getRequiredProductIds().split(","))
-                    .map(String::trim)
-                    .map(Long::valueOf)
-                    .collect(Collectors.toSet());
+        for (BundleRule rule : rules) {
+            String[] ids = rule.getRequiredProductIds().split(",");
+            boolean match = Arrays.stream(ids)
+                    .allMatch(id ->
+                            items.stream().anyMatch(i ->
+                                    i.getProduct().getId().toString().equals(id)));
 
-            if (productIds.containsAll(required)) {
+            if (match) {
                 BigDecimal total = items.stream()
-                        .map(ci -> ci.getProduct().getPrice())
+                        .map(i -> i.getProduct().getPrice()
+                                .multiply(BigDecimal.valueOf(i.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal discount =
+                        total.multiply(BigDecimal.valueOf(rule.getDiscountPercentage() / 100));
 
                 DiscountApplication app = new DiscountApplication();
                 app.setCart(cart);
                 app.setBundleRule(rule);
-                app.setDiscountAmount(
-                        total.multiply(BigDecimal.valueOf(rule.getDiscountPercentage() / 100))
-                );
+                app.setDiscountAmount(discount);
+                app.setAppliedAt(LocalDateTime.now());
 
-                results.add(discountApplicationRepository.save(app));
+                result.add(appRepo.save(app));
             }
         }
-        return results;
+        return result;
     }
 }
