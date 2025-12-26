@@ -2,31 +2,52 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
-import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.model.User;
+import com.example.demo.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
-    public AuthController(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
+    // -------- REGISTER --------
+    @PostMapping("/register")
+    public AuthResponse register(@RequestBody User user) {
+        User saved = userService.registerUser(user);
+        return new AuthResponse(
+                saved.getId(),
+                saved.getEmail(),
+                saved.getRole(),
+                "User registered successfully"
+        );
+    }
+
+    // -------- LOGIN --------
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
-        // In real apps → validate user via DB
-        // For now → mock successful authentication
+        User user = userService.getUserByEmail(request.getEmail());
 
-        String email = request.getEmail();
-        String role = "USER";
-        Long userId = 1L;
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
 
-        String token = jwtTokenProvider.generateToken(email, role, userId);
+        if (!user.getActive()) {
+            throw new IllegalArgumentException("User is inactive");
+        }
 
-        return new AuthResponse(token, userId, email);
+        return new AuthResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                "Login successful"
+        );
     }
 }
