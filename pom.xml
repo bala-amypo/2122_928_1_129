@@ -84,28 +84,21 @@
 
     </dependencies>
 
-  <build>
+ <build>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.2.5</version>
             <configuration>
-                <!-- FORCE TestNG -->
-                <providers>
-                    <provider>
-                        <name>testng</name>
-                    </provider>
-                </providers>
-
-                <!-- Pick up *Tests.java -->
-                <includes>
-                    <include>**/*Tests.java</include>
-                </includes>
+                <suiteXmlFiles>
+                    <suiteXmlFile>testng.xml</suiteXmlFile>
+                </suiteXmlFiles>
             </configuration>
         </plugin>
     </plugins>
 </build>
+
 
 
 </project>
