@@ -1,10 +1,10 @@
 package com.example.demo.repository;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.model.Product;
+import java.util.*;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
-
+public interface ProductRepository {
     Optional<Product> findBySku(String sku);
+    Optional<Product> findById(Long id);
+    Product save(Product product);
 }

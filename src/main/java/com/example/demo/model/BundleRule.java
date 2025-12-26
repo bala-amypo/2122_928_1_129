@@ -1,77 +1,25 @@
 package com.example.demo.model;
 
-import java.math.BigDecimal;
-import jakarta.persistence.*;
-
-@Entity
 public class BundleRule {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String ruleName;
+    private String requiredProductIds;
+    private Double discountPercentage;
+    private Boolean active = true;
 
-    private Long buyProductId;
-    private int buyQuantity;
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    private Long freeProductId;
-    private int freeQuantity;
+    public String getRuleName() { return ruleName; }
+    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
 
-    private BigDecimal discountPercentage;
+    public String getRequiredProductIds() { return requiredProductIds; }
+    public void setRequiredProductIds(String requiredProductIds) { this.requiredProductIds = requiredProductIds; }
 
-    private boolean active = true;
+    public Double getDiscountPercentage() { return discountPercentage; }
+    public void setDiscountPercentage(Double discountPercentage) { this.discountPercentage = discountPercentage; }
 
-    public BundleRule() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getBuyProductId() {
-        return buyProductId;
-    }
-
-    public void setBuyProductId(Long buyProductId) {
-        this.buyProductId = buyProductId;
-    }
-
-    public int getBuyQuantity() {
-        return buyQuantity;
-    }
-
-    public void setBuyQuantity(int buyQuantity) {
-        this.buyQuantity = buyQuantity;
-    }
-
-    public Long getFreeProductId() {
-        return freeProductId;
-    }
-
-    public void setFreeProductId(Long freeProductId) {
-        this.freeProductId = freeProductId;
-    }
-
-    public int getFreeQuantity() {
-        return freeQuantity;
-    }
-
-    public void setFreeQuantity(int freeQuantity) {
-        this.freeQuantity = freeQuantity;
-    }
-
-    // ✅ REQUIRED BY DiscountServiceImpl
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }

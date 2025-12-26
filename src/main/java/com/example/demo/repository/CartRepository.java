@@ -1,11 +1,10 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Cart;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.*;
 
-import java.util.Optional;
-
-public interface CartRepository extends JpaRepository<Cart, Long> {
-
+public interface CartRepository {
     Optional<Cart> findByUserIdAndActiveTrue(Long userId);
+    Optional<Cart> findById(Long id);
+    Cart save(Cart cart);
 }
