@@ -1,4 +1,5 @@
 package com.example.demo.service.impl;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
@@ -7,7 +8,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@Service
 public class DiscountServiceImpl {
 
     private final DiscountApplicationRepository appRepo;
